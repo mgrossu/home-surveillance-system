@@ -23,9 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
-# Add video group with same GID as host so /dev/video0 is accessible
-RUN groupadd -g 483 video-host || true && \
-    usermod -aG video-host root
 
 WORKDIR /app
 

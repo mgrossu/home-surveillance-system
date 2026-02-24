@@ -1,8 +1,7 @@
 # podman-compose.yml — home-surveillance-system
 # Generic stack — works on any Linux (laptop, VM, x86 server).
+# Builds the image locally.
 #
-# For RPi4 deployment use:
-#   podman-compose -f podman-compose.yml -f podman-compose.rpi4.yml up -d
 #
 # Usage:
 #   podman-compose up -d --build
