@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark surveillance dashboard design system */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 220 20% 6%;
+    --foreground: 210 20% 95%;
+
+    --card: 220 18% 10%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 18% 10%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 175 75% 50%;
+    --primary-foreground: 220 20% 6%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 210 15% 55%;
+
+    --accent: 175 75% 50%;
+    --accent-foreground: 220 20% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 98%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 220 20% 6%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 220 20% 6%;
+
+    --border: 220 15% 20%;
+    --input: 220 15% 15%;
+    --ring: 175 75% 50%;
+
+    --radius: 0.75rem;
+
+    /* Custom surveillance tokens */
+    --glow-primary: 0 0 20px hsl(175 75% 50% / 0.4);
+    --glow-success: 0 0 15px hsl(142 76% 45% / 0.5);
+    --glow-danger: 0 0 15px hsl(0 72% 51% / 0.5);
+    --glow-warning: 0 0 15px hsl(38 92% 50% / 0.5);
+    
+    --gradient-card: linear-gradient(135deg, hsl(220 18% 12%) 0%, hsl(220 18% 8%) 100%);
+    --gradient-header: linear-gradient(90deg, hsl(175 75% 50% / 0.1) 0%, transparent 50%, hsl(175 75% 50% / 0.1) 100%);
+
+    --sidebar-background: 220 18% 8%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 175 75% 50%;
+    --sidebar-primary-foreground: 220 20% 6%;
+    --sidebar-accent: 220 15% 15%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 15% 18%;
+    --sidebar-ring: 175 75% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .camera-feed {
+    @apply relative overflow-hidden rounded-lg border border-border bg-card;
+    box-shadow: inset 0 1px 0 hsl(220 15% 25% / 0.1);
+  }
+
+  .camera-feed-active {
+    border-color: hsl(var(--primary));
+    box-shadow: var(--glow-primary);
+  }
+
+  .status-indicator {
+    @apply w-2.5 h-2.5 rounded-full;
+  }
+
+  .status-online {
+    @apply bg-green-500;
+    box-shadow: var(--glow-success);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .status-offline {
+    @apply bg-red-500;
+    box-shadow: var(--glow-danger);
+  }
+
+  .status-recording {
+    @apply bg-amber-500;
+    box-shadow: var(--glow-warning);
+    animation: pulse-glow 1s ease-in-out infinite;
+  }
+
+  .glass-panel {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+  }
+
+  .control-button {
+    @apply p-2.5 rounded-lg bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200;
+  }
+
+  .control-button-active {
+    @apply bg-primary/20 text-primary hover:bg-primary/30;
+    box-shadow: var(--glow-primary);
+  }
+}
+
+@layer utilities {
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes scan-line {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100vh);
+    }
+  }
+
+  .animate-scan {
+    animation: scan-line 3s linear infinite;
+  }
+}

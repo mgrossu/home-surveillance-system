@@ -1,0 +1,43 @@
+# mediamtx/mediamtx.yml
+# MediaMTX config — tuned for low-latency H.264 RTSP on Raspberry Pi 4.
+#
+# Stream: rtsp://<rpi-ip>:8554/cam
+# HA Generic Camera: rtsp://<rpi-ip>:8554/cam
+
+logLevel: warn
+logDestinations: [stdout]
+
+rtspAddress:   :8554
+rtmpAddress:   :1935
+hlsAddress:    :8888
+webrtcAddress: :8889
+
+# Disable unused protocols
+rtmp:   no
+hls:    no
+webrtc: no
+
+# Buffer tuning for H.264 on RPi4
+readBufferCount: 512
+writeQueueSize:  512
+
+paths:
+
+  # /cam — published by the backend FFmpeg pipeline
+  cam:
+    publishUser: ""
+    publishPass: ""
+    publishIPs:  []   # lock to 172.0.0.0/8 in production
+
+    readUser: ""
+    readPass: ""
+    readIPs:  []
+
+    # Recording handled by recorder.py — don't double-write here
+    record: no
+
+    sourceOnDemand: no
+
+  # Block all other paths
+  ~^(?!cam$).*:
+    publishIPs: [127.0.0.1]

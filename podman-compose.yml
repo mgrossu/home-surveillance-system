@@ -1,0 +1,69 @@
+# podman-compose.yml — home-surveillance-system production stack
+# Compatible with: podman-compose, docker compose v2
+#
+# Services:
+#   mediamtx  — RTSP server (bluenviron/mediamtx)
+#   backend   — FastAPI + FFmpeg + OpenCV
+#
+# Usage:
+#   podman-compose up -d --build
+#   podman-compose logs -f backend
+#   podman-compose down
+
+version: "3.9"
+
+services:
+
+  # ── MediaMTX RTSP server ────────────────────────────────────────────────────
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: hss-mediamtx
+    restart: unless-stopped
+    ports:
+      - "8554:8554"     # RTSP — consumed by Home Assistant / HomeKit
+    volumes:
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
+    networks:
+      - hss
+
+  # ── Backend ─────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: hss-backend
+    restart: unless-stopped
+    depends_on:
+      - mediamtx
+    ports:
+      - "8008:8008"     # REST API + serves built frontend
+    environment:
+      - CAMERA_DEVICE=0
+      - RTSP_URL=rtsp://mediamtx:8554/cam
+      - RECORDINGS_DIR=/recordings
+      - UI_DIST=/app/frontend/dist
+      - DEV_MODE=false
+    devices:
+      - /dev/video0:/dev/video0       # USB camera
+      # RPi4 hardware H.264 encoder — comment out on x86
+      - /dev/video10:/dev/video10
+      - /dev/video11:/dev/video11
+      - /dev/video12:/dev/video12
+    volumes:
+      - recordings:/recordings
+      # Mount built frontend (run scripts/build-ui.sh first)
+      - ./frontend/dist:/app/frontend/dist:ro
+    networks:
+      - hss
+
+volumes:
+  recordings:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./recordings
+
+networks:
+  hss:
+    driver: bridge
