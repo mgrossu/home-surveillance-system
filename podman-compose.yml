@@ -1,11 +1,11 @@
-# podman-compose.yml — home-surveillance-system production stack
-# Compatible with: podman-compose, docker compose v2
+# podman-compose.yml — home-surveillance-system
+# Generic stack — works on any Linux (laptop, VM, x86 server).
 #
-# Before running:
-#   ./scripts/build-ui.sh   ← builds frontend/dist/
+# For RPi4 deployment use:
+#   podman-compose -f podman-compose.yml -f podman-compose.rpi4.yml up -d
 #
 # Usage:
-#   podman-compose up -d
+#   podman-compose up -d --build
 #   podman-compose logs -f
 #   podman-compose down
 
@@ -44,10 +44,6 @@ services:
       - DEV_MODE=false
     devices:
       - /dev/video0:/dev/video0
-      # RPi4 hardware H.264 encoder — uncomment on RPi4
-      #- /dev/video10:/dev/video10
-      #- /dev/video11:/dev/video11
-      #- /dev/video12:/dev/video12
     security_opt:
       - label=disable
     volumes:
