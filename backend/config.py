@@ -18,7 +18,7 @@ FRAME_RATE      = int(os.getenv("FRAME_RATE",    "25"))
 RTSP_URL        = os.getenv("RTSP_URL", "rtsp://mediamtx:8554/cam")
 
 # ── Recording ─────────────────────────────────────────────────────────────────
-RECORDINGS_DIR  = Path(os.getenv("RECORDINGS_DIR", "/recordings"))
+RECORDINGS_DIR  = Path(os.getenv("RECORDINGS_DIR", "./recordings"))
 
 # ── App ───────────────────────────────────────────────────────────────────────
 # DEV_MODE=true  → skip FFmpeg/MediaMTX; /api/snapshot still works via OpenCV
