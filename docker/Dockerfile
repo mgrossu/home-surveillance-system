@@ -1,11 +1,20 @@
 # docker/Dockerfile
-# Single container: FastAPI backend + FFmpeg
-# Works on both RPi4 (linux/arm64) and x86 dev (linux/amd64).
-# Hardware H.264 (h264_v4l2m2m) is auto-detected at runtime — no rebuild needed.
+# Multi-stage build:
+#   Stage 1 (frontend) — builds the React/TypeScript UI
+#   Stage 2 (backend)  — FastAPI + FFmpeg, copies built UI from stage 1
 
-FROM python:3.13-slim
+# ── Stage 1: Build frontend ───────────────────────────────────────────────────
+FROM docker.io/library/node:20-slim AS frontend
 
-# System deps: FFmpeg + OpenCV runtime libs
+WORKDIR /app
+COPY frontend/package*.json ./
+RUN npm ci --silent
+COPY frontend/ ./
+RUN npm run build
+
+# ── Stage 2: Backend ──────────────────────────────────────────────────────────
+FROM docker.io/library/python:3.13-slim AS backend
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ffmpeg \
         libgl1 \
@@ -14,24 +23,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
+# Add video group with same GID as host so /dev/video0 is accessible
+RUN groupadd -g 483 video-host || true && \
+    usermod -aG video-host root
+
 WORKDIR /app
 
-# Python deps (cached layer — only re-runs if requirements.txt changes)
 COPY backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
-# Backend source
 COPY backend/ ./backend/
 
-# Frontend dist is copied in by the build script or mounted as a volume
-# It will be served by FastAPI's StaticFiles if the directory exists
-RUN mkdir -p /app/frontend/dist
+# Copy built frontend from stage 1
+COPY --from=frontend /app/dist ./frontend/dist
 
-# Recordings volume mount point
 RUN mkdir -p /recordings
 
 EXPOSE 8008
 
-# Run from the backend directory so relative imports work
 WORKDIR /app/backend
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8008"]
