@@ -69,7 +69,7 @@ def get_status():
         camera_enabled=state.camera_enabled,
         recording=state.recording,
         dev_mode=config.DEV_MODE,
-        rtsp_url=config.RTSP_URL if not config.DEV_MODE else None,
+        rtsp_url=config.get_rtsp_url_public() if not config.DEV_MODE else None,
         stream_alive=streamer.is_alive() if not config.DEV_MODE else None,
     )
 
